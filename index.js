@@ -4,11 +4,22 @@ import axios from 'axios'
 import express  from 'express'
 import * as cheerio from 'cheerio'
 
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 
 const app = express()
 app.use(cors())
 
 const scraper = async () => {
+
+    const product = await prisma.product.create({
+        data: {
+            brand: 'test',
+            name: 'test item',
+            category: 'test category',
+            image: 'test image'
+        }
+    })
 
     let products = []
     let i = 1
@@ -24,7 +35,7 @@ const scraper = async () => {
             const image = $(element).find('img').attr('src')
     
             const value = name.toLocaleLowerCase()
-            const matchArray = value.match(/cleanser|exfoliant|exfoliator|moisturizer|lotion|scrub|cream|spf|sunscreen|eye|serum|oil|cleansing|hydrator|toner/gm)
+            const matchArray = value.match(/cleanser|exfoliant|exfoliator|moisturizer|lotion|scrub|cream|spf|sunscreen|eye|serum|oil|cleansing|hydrator|toner|treatment|essence|mask|sheet/gm)
             const matchValue = matchArray ? matchArray[0] : 'unknown';
 
             let category = ''
