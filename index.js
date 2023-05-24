@@ -2,58 +2,67 @@ const PORT = 3003 || 8000
 import cors from 'cors'
 import axios from 'axios'
 import express  from 'express'
-import iconv from 'iconv-lite'
 import * as cheerio from 'cheerio'
+
 
 const app = express()
 app.use(cors())
 
-const url = 'https://gmina.swidnica.pl'
+const scraper = async () => {
 
-const fetchArticles = async () => {
-    const response = await axios.get(url, {responseType: 'arraybuffer'})
-    const html = iconv.decode(Buffer.from(response.data), 'iso-8859-2')
+    let products = []
+    let i = 1
+    
+    while(i<=2){ //88
 
-    const $ = cheerio.load(html)
+        const response = await axios.get(`https://www.dermstore.com/skin-care.list?pageNumber=${i}`) 
+        const html = response.data
+        const $ = cheerio.load(html)
+        $('div .productBlock').each((i, element) => {
+            const brand = $(element).attr('data-product-brand')
+            const name = $(element).attr('data-product-name')
+            const image = $(element).find('img').attr('src')
+    
+            const value = name.toLocaleLowerCase()
+            const matchArray = value.match(/cleanser|exfoliant|exfoliator|moisturizer|lotion|scrub|cream|spf|sunscreen|eye|serum|oil|cleansing|hydrator|toner/gm)
+            const matchValue = matchArray ? matchArray[0] : 'unknown';
 
-    const articles = $('a.contentpagetitle').map((i, element) => ({
-        title: $(element).text().trim(),
-        url: $(element).attr('href')
-    })).get()
+            let category = ''
 
-    for(const article of articles){
-        const response2 = await axios.get(article.url, {responseType: 'arraybuffer'})
-        const html2 = iconv.decode(Buffer.from(response2.data), 'iso-8859-2')
+            switch(matchValue){
+                case 'exfoliant':
+                case 'exfoliator':
+                case 'scrub':
+                    category = 'exfoliator'
+                    break
+                case 'cleanser':
+                case 'cleansing':
+                    category = 'cleanser'
+                    break
+                case 'moisturizer':
+                case 'lotion':
+                case 'hydrator':
+                    category = 'moisturizer'
+                    break
+                    case 'spf':
+                    case 'sunscreen':
+                        category = 'sunscreen'
+                        break
+                default:
+                    category = matchValue
+                    break
 
-        const $$ = cheerio.load(html2)
+            }
 
-        article.img = $$('p').find('img').attr('src')
-        article.text = $$('p').find('b').text().trim()
+            products.push({id: i,brand: brand,name: name,category: category, image: image})
+        })
+
+        i++
     }
 
-    return articles
+    console.log(products)
 }
 
-app.get('/', async (req, res) => {
-    const articles = await fetchArticles()
-
-    console.log(articles)
-
-    const html = articles.map(article => (
-        `<a href='${article.url}'>
-            <div style='border: 1px solid black; width: 350px; text-align: center; padding: .5rem;'>
-                <h1>${article.title}</h1>
-                <img style='width: 100%;' src='${article.img}' alt='${article.title}'/>
-                <p>${article.text}</p>
-            </div>
-        </a>`
-    )).join('')
-
-    res.send(
-        `<div style='display: flex; flex-direction: column; align-items: center; gap: 2rem;'>
-            ${html}    
-        </div>`
-    )
-})
+scraper()
 
 app.listen(PORT, () => console.log(`server running: ${PORT}`))
