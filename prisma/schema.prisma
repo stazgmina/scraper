@@ -17,3 +17,6 @@ model Product {
   category        String?
   image           String?
 }
+
+
+// 'https://www.youtube.com/watch?v=gxkwMm_j850&t=1s'  do obejrzenia
