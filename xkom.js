@@ -5,7 +5,6 @@ import puppeteer from 'puppeteer'
 // import * as cheerio from 'cheerio'
 // import axios from 'axios'
 
-const url = 'https://www.x-kom.pl/p/1144748-sluchawki-bezprzewodowe-meizu-pop-2s.html'
 // const url = 'https://www.x-kom.pl/goracy_strzal'
 // godziny 22:00  // 10:00
 
@@ -22,7 +21,7 @@ const bot = async () => {
 
     const browser = await puppeteer.launch({headless: false})
     const page = await browser.newPage()
-    await page.goto(url)
+    await page.goto('https://www.x-kom.pl/p/1144748-sluchawki-bezprzewodowe-meizu-pop-2s.html')
 
     const acceptCookies = await page.waitForSelector('.dRLEBj')
     await delay(3000) // TEST
