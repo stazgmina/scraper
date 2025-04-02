@@ -38,7 +38,7 @@ const bot = async () => {
     await page.goto('https://www.x-kom.pl/zamowienie')
 
     const name = await page.waitForSelector('[name=recipientName]')
-    await name.type('Andrzej Duda', {delay: 100})
+    await name.type('John Doe', {delay: 100})
 
     const street = await page.waitForSelector('[name=recipientStreet]')
     await street.type('Głowackiego 4', {delay: 100})
@@ -50,10 +50,10 @@ const bot = async () => {
     await city.type('Świdnica', {delay: 100})
 
     const number = await page.waitForSelector('[name=recipientPhoneNumber]')
-    await number.type('696 997 711', {delay: 100})
+    await number.type('696 997 911', {delay: 100})
 
     const email = await page.waitForSelector('[name=recipientEmail]')
-    await email.type('Dupa@dupa.dup', {delay: 100})
+    await email.type('dzondoe@doe.com', {delay: 100})
 
     await delay(3000)
     const paymentBox = await page.waitForSelector('.cWqeuf')
